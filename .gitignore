@@ -1,2 +1,4 @@
 # Ignore uploaded files
 uploads/ 
+config/
+.env
