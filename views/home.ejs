@@ -1,0 +1,62 @@
+<%- include('partials/header') %>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="jumbotron bg-light p-5 rounded">
+                <h1 class="display-4">Welcome to Job Portal</h1>
+                <p class="lead">Find your dream job or hire the best talent.</p>
+                <hr class="my-4">
+                
+                <% if (!user) { %>
+                    <p>Get started by creating an account or logging in.</p>
+                    <div class="mt-4">
+                        <a href="/auth/register" class="btn btn-primary me-3">Register</a>
+                        <a href="/auth/login" class="btn btn-outline-primary">Login</a>
+                    </div>
+                <% } else { %>
+                    <p>Welcome back, <%= user.firstName %>!</p>
+                    <div class="mt-4">
+                        <% if (user.role === 'employer') { %>
+                            <% if (!user.companyId) { %>
+                                <a href="/companies/create" class="btn btn-primary me-3">Create Company Profile</a>
+                            <% } else { %>
+                                <a href="/companies/<%= user.companyId %>" class="btn btn-primary me-3">View Company Profile</a>
+                            <% } %>
+                            <a href="/jobs/create" class="btn btn-success me-3">Post a Job</a>
+                        <% } else { %>
+                            <a href="/jobs" class="btn btn-primary me-3">Browse Jobs</a>
+                            <a href="/applications" class="btn btn-success">My Applications</a>
+                        <% } %>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    <% if (locals.success_msg && success_msg.length > 0) { %>
+        <div class="alert alert-success alert-dismissible fade show mt-4">
+            <%= success_msg %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+
+    <% if (locals.error_msg && error_msg.length > 0) { %>
+        <div class="alert alert-danger alert-dismissible fade show mt-4">
+            <%= error_msg %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+
+    <!-- Recent Jobs Section -->
+    <div class="mt-5">
+        <h2>Recent Jobs</h2>
+        <div class="row mt-4">
+            <!-- This will be populated with recent jobs -->
+            <p class="text-muted">No jobs available at the moment.</p>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

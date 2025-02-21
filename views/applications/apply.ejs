@@ -1,0 +1,76 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5">
+    <!-- Flash Messages -->
+    <% if (locals.success_msg && success_msg.length > 0) { %>
+        <div class="alert alert-success alert-dismissible fade show">
+            <%= success_msg %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+
+    <% if (locals.error_msg && error_msg.length > 0) { %>
+        <div class="alert alert-danger alert-dismissible fade show">
+            <%= error_msg %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-4">
+                        <% if (job.company && job.company.logoUrl) { %>
+                            <img src="<%= job.company.logoUrl %>" alt="<%= job.company.companyName %> Logo" 
+                                class="me-3" style="max-height: 50px;">
+                        <% } %>
+                        <div>
+                            <h2 class="card-title mb-1">Apply for <%= job.title %></h2>
+                            <p class="text-muted mb-0"><%= job.company ? job.company.companyName : 'Company Name Not Available' %></p>
+                        </div>
+                    </div>
+
+                    <form action="/jobs/<%= job.id %>/apply" method="POST">
+                        <div class="mb-4">
+                            <label for="coverLetter" class="form-label">Cover Letter</label>
+                            <textarea 
+                                class="form-control" 
+                                id="coverLetter" 
+                                name="coverLetter" 
+                                rows="6" 
+                                placeholder="Write a brief cover letter explaining why you're a good fit for this position..."
+                                required
+                            ></textarea>
+                            <div class="form-text">Explain your interest in this position and highlight relevant experience.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="resumeUrl" class="form-label">Resume URL</label>
+                            <input 
+                                type="url" 
+                                class="form-control" 
+                                id="resumeUrl" 
+                                name="resumeUrl" 
+                                placeholder="https://drive.google.com/your-resume"
+                                required
+                            >
+                            <div class="form-text">Provide a link to your resume (Google Drive, Dropbox, etc.)</div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Application
+                            </button>
+                            <a href="/jobs/<%= job.id %>" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Job Details
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

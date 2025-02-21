@@ -1,0 +1,55 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <% if (company.logoUrl) { %>
+                    <img src="<%= company.logoUrl %>" class="card-img-top company-logo" alt="<%= company.companyName %> logo">
+                <% } %>
+                <div class="card-body">
+                    <h1 class="card-title"><%= company.companyName %></h1>
+                    <p class="text-muted"><%= company.industry %> | <%= company.location %></p>
+                    
+                    <div class="company-description mt-4">
+                        <h4>About Us</h4>
+                        <p><%= company.description %></p>
+                    </div>
+
+                    <% if (company.website) { %>
+                        <div class="mt-3">
+                            <a href="<%= company.website %>" target="_blank" class="btn btn-outline-primary">
+                                Visit Website
+                            </a>
+                        </div>
+                    <% } %>
+
+                    <% if (isOwner) { %>
+                        <div class="mt-4">
+                            <a href="/company/edit/<%= company.id %>" class="btn btn-primary">Edit Profile</a>
+                        </div>
+                    <% } %>
+
+                    <% if (company.jobs && company.jobs.length > 0) { %>
+                        <div class="mt-5">
+                            <h4>Open Positions</h4>
+                            <div class="list-group">
+                                <% company.jobs.forEach(job => { %>
+                                    <a href="/jobs/<%= job.id %>" class="list-group-item list-group-item-action">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h5 class="mb-1"><%= job.title %></h5>
+                                            <small><%= job.location %></small>
+                                        </div>
+                                        <p class="mb-1"><%= job.description.substring(0, 150) %>...</p>
+                                    </a>
+                                <% }) %>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %>

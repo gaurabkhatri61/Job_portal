@@ -1,0 +1,94 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>Browse Companies</h2>
+            <p class="text-muted">Discover great places to work and explore job opportunities</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <% if (user && user.role === 'employer') { %>
+                <a href="/companies/create" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Register Company
+                </a>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    <% if (locals.success_msg && success_msg.length > 0) { %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <%= success_msg %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <% } %>
+
+    <% if (locals.error_msg && error_msg.length > 0) { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%= error_msg %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <% } %>
+
+    <!-- Companies Grid -->
+    <div class="row">
+        <% if (companies && companies.length > 0) { %>
+            <% companies.forEach(function(company) { %>
+                <div class="col-md-4 mb-4">
+                    <div class="card company-card h-100 shadow-sm">
+                        <a href="/companies/<%= company.id %>" class="text-decoration-none text-dark">
+                            <% if (company.logoUrl) { %>
+                                <img src="<%= company.logoUrl %>" alt="<%= company.companyName %>" class="card-img-top company-logo p-3">
+                            <% } else { %>
+                                <div class="card-img-top company-logo d-flex align-items-center justify-content-center p-3">
+                                    <i class="bi bi-building text-muted" style="font-size: 3rem;"></i>
+                                </div>
+                            <% } %>
+                            <div class="card-body">
+                                <h5 class="card-title"><%= company.companyName %></h5>
+                                <p class="card-text text-muted">
+                                    <i class="bi bi-geo-alt"></i> <%= company.location %><br>
+                                    <i class="bi bi-briefcase"></i> <%= company.industry %>
+                                </p>
+                                <p class="card-text"><%= company.description.substring(0, 100) %>...</p>
+                            </div>
+                        </a>
+                        <div class="card-footer bg-white">
+                            <small class="text-muted">
+                                <% if (company.user) { %>
+                                    Posted by <%= company.user.firstName %> <%= company.user.lastName %>
+                                <% } %>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <div class="col-12">
+                <div class="alert alert-info">
+                    No companies registered yet. 
+                    <% if (user && user.role === 'employer') { %>
+                        <a href="/companies/create" class="alert-link">Be the first to register your company!</a>
+                    <% } %>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<style>
+.company-card {
+    transition: transform 0.2s;
+}
+.company-card:hover {
+    transform: translateY(-5px);
+}
+.company-logo {
+    height: 200px;
+    object-fit: contain;
+    background-color: #f8f9fa;
+}
+</style>
+
+<%- include('../partials/footer') %>

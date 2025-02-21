@@ -1,0 +1,156 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5">
+    <!-- Flash Messages -->
+    <% if (locals.success_msg && success_msg.length > 0) { %>
+        <div class="alert alert-success alert-dismissible fade show">
+            <%= success_msg %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+
+    <% if (locals.error_msg && error_msg.length > 0) { %>
+        <div class="alert alert-danger alert-dismissible fade show">
+            <%= error_msg %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h3 mb-0">Applications for <%= job.title %></h1>
+                <a href="/jobs/<%= job.id %>" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Job
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <% if (applications.length === 0) { %>
+                <div class="text-center py-5">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                    <h5>No applications yet</h5>
+                    <p class="text-muted">When candidates apply for this job, their applications will appear here.</p>
+                </div>
+            <% } else { %>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Applicant</th>
+                                <th>Applied On</th>
+                                <th>Status</th>
+                                <th>Resume</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% applications.forEach(application => { %>
+                                <tr>
+                                    <td>
+                                        <div>
+                                            <h6 class="mb-0"><%= application.User.firstName %> <%= application.User.lastName %></h6>
+                                            <small class="text-muted"><%= application.User.email %></small>
+                                        </div>
+                                    </td>
+                                    <td><%= new Date(application.createdAt).toLocaleDateString() %></td>
+                                    <td>
+                                        <select class="form-select form-select-sm status-select" 
+                                                data-application-id="<%= application.id %>"
+                                                style="width: 130px;">
+                                            <option value="pending" <%= application.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                                            <option value="reviewing" <%= application.status === 'reviewing' ? 'selected' : '' %>>Reviewing</option>
+                                            <option value="accepted" <%= application.status === 'accepted' ? 'selected' : '' %>>Accepted</option>
+                                            <option value="rejected" <%= application.status === 'rejected' ? 'selected' : '' %>>Rejected</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <a href="<%= application.resumeUrl %>" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                            <i class="fas fa-file-pdf me-1"></i>View Resume
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-primary view-cover-letter" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#coverLetterModal"
+                                                data-cover-letter="<%= application.coverLetter %>">
+                                            <i class="fas fa-envelope me-1"></i>Cover Letter
+                                        </button>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<!-- Cover Letter Modal -->
+<div class="modal fade" id="coverLetterModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cover Letter</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="coverLetterContent" class="bg-light p-4 rounded"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle status changes
+    document.querySelectorAll('.status-select').forEach(select => {
+        select.addEventListener('change', async function() {
+            const applicationId = this.dataset.applicationId;
+            const status = this.value;
+            
+            try {
+                const response = await fetch(`/applications/status/${applicationId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ status })
+                });
+                
+                if (!response.ok) throw new Error('Failed to update status');
+                
+                // Show success message
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-success alert-dismissible fade show';
+                alert.innerHTML = `
+                    Status updated successfully
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                document.querySelector('.container').insertBefore(alert, document.querySelector('.card'));
+            } catch (error) {
+                console.error('Error:', error);
+                // Show error message
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-danger alert-dismissible fade show';
+                alert.innerHTML = `
+                    Failed to update status
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+                document.querySelector('.container').insertBefore(alert, document.querySelector('.card'));
+            }
+        });
+    });
+
+    // Handle cover letter modal
+    document.querySelectorAll('.view-cover-letter').forEach(button => {
+        button.addEventListener('click', function() {
+            const coverLetter = this.dataset.coverLetter;
+            document.getElementById('coverLetterContent').textContent = coverLetter;
+        });
+    });
+});
+</script>
+
+<%- include('../partials/footer') %>

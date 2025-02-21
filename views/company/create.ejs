@@ -1,0 +1,136 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">Create Company Profile</h2>
+                    
+                    <!-- Flash Messages -->
+                    <% if (locals.success_msg && success_msg.length > 0) { %>
+                        <div class="alert alert-success alert-dismissible fade show">
+                            <%= success_msg %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    <% } %>
+
+                    <% if (locals.error_msg && error_msg.length > 0) { %>
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <%= error_msg %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    <% } %>
+
+                    <!-- Error Message -->
+                    <% if (typeof error !== 'undefined' && error) { %>
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <%= error %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    <% } %>
+
+                    <form id="companyForm" action="/companies" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="companyName" class="form-label">Company Name *</label>
+                            <input type="text" class="form-control" id="companyName" name="companyName" required>
+                            <div class="invalid-feedback">
+                                Please provide a company name.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="industry" class="form-label">Industry *</label>
+                            <select class="form-select" id="industry" name="industry" required>
+                                <option value="" selected disabled>Select Industry</option>
+                                <option value="Technology">Technology</option>
+                                <option value="Healthcare">Healthcare</option>
+                                <option value="Finance">Finance</option>
+                                <option value="Education">Education</option>
+                                <option value="Manufacturing">Manufacturing</option>
+                                <option value="Retail">Retail</option>
+                                <option value="Services">Services</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <div class="invalid-feedback">
+                                Please select an industry.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="location" class="form-label">Location *</label>
+                            <input type="text" class="form-control" id="location" name="location" required
+                                placeholder="City, Country">
+                            <div class="invalid-feedback">
+                                Please provide a location.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Company Description *</label>
+                            <textarea class="form-control" id="description" name="description" rows="5" required
+                                placeholder="Tell us about your company..."></textarea>
+                            <div class="invalid-feedback">
+                                Please provide a company description.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="website" class="form-label">Website</label>
+                            <input type="url" class="form-control" id="website" name="website" 
+                                placeholder="https://example.com">
+                            <div class="form-text">Optional: Enter your company's website URL</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="logo" class="form-label">Company Logo</label>
+                            <input type="file" class="form-control" id="logo" name="logo" accept="image/*">
+                            <div class="form-text">Optional: Upload your company logo (max 5MB)</div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Create Company Profile</button>
+                            <a href="/companies" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Ensure form action is correct
+window.addEventListener('load', function() {
+    const form = document.querySelector('form');
+    if (form) {
+        form.action = '/companies';
+    }
+});
+
+// Form validation
+(function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault()
+                event.stopPropagation()
+            }
+            form.classList.add('was-validated')
+        }, false)
+    })
+})()
+
+// Preview logo image
+document.getElementById('logo').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file && file.size > 5 * 1024 * 1024) {
+        alert('File is too large. Maximum size is 5MB.');
+        this.value = '';
+    }
+});
+</script>
+
+<%- include('../partials/footer') %>

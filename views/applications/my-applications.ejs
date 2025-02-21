@@ -1,0 +1,140 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5">
+    <!-- Flash Messages -->
+    <% if (locals.success_msg && success_msg.length > 0) { %>
+        <div class="alert alert-success alert-dismissible fade show">
+            <%= success_msg %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+
+    <% if (locals.error_msg && error_msg.length > 0) { %>
+        <div class="alert alert-danger alert-dismissible fade show">
+            <%= error_msg %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="h3 mb-0">My Job Applications</h1>
+                <a href="/jobs" class="btn btn-outline-primary">
+                    <i class="fas fa-search me-2"></i>Browse More Jobs
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <% if (applications.length === 0) { %>
+                <div class="text-center py-5">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                    <h5>No Applications Yet</h5>
+                    <p class="text-muted">You haven't applied to any jobs yet. Start your job search now!</p>
+                </div>
+            <% } else { %>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Job Title</th>
+                                <th>Company</th>
+                                <th>Applied On</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% applications.forEach(application => { %>
+                                <tr>
+                                    <td>
+                                        <h6 class="mb-0"><%= application.Job.title %></h6>
+                                        <small class="text-muted"><%= application.Job.type %></small>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <% if (application.Job.company && application.Job.company.logoUrl) { %>
+                                                <img src="<%= application.Job.company.logoUrl %>" 
+                                                     alt="<%= application.Job.company.companyName %>" 
+                                                     class="me-2" 
+                                                     style="width: 30px; height: 30px; object-fit: contain;">
+                                            <% } %>
+                                            <%= application.Job.company ? application.Job.company.companyName : 'N/A' %>
+                                        </div>
+                                    </td>
+                                    <td><%= new Date(application.createdAt).toLocaleDateString() %></td>
+                                    <td>
+                                        <% const statusColors = {
+                                            'pending': 'bg-warning',
+                                            'reviewing': 'bg-info',
+                                            'accepted': 'bg-success',
+                                            'rejected': 'bg-danger'
+                                        } %>
+                                        <span class="badge <%= statusColors[application.status] %>">
+                                            <%= application.status.charAt(0).toUpperCase() + application.status.slice(1) %>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="/jobs/<%= application.Job.id %>" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye me-1"></i>View Job
+                                            </a>
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-outline-info view-application" 
+                                                    data-bs-toggle="modal" 
+                                                    data-bs-target="#applicationModal"
+                                                    data-cover-letter="<%= application.coverLetter %>"
+                                                    data-resume-url="<%= application.resumeUrl %>">
+                                                <i class="fas fa-file-alt me-1"></i>Details
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<!-- Application Details Modal -->
+<div class="modal fade" id="applicationModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Application Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Cover Letter</h6>
+                <div id="coverLetterContent" class="bg-light p-4 rounded mb-4"></div>
+                
+                <h6>Resume</h6>
+                <div id="resumeContent">
+                    <a id="resumeLink" href="#" target="_blank" class="btn btn-outline-primary">
+                        <i class="fas fa-external-link-alt me-2"></i>View Resume
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle application details modal
+    document.querySelectorAll('.view-application').forEach(button => {
+        button.addEventListener('click', function() {
+            const coverLetter = this.dataset.coverLetter;
+            const resumeUrl = this.dataset.resumeUrl;
+            
+            document.getElementById('coverLetterContent').textContent = coverLetter;
+            document.getElementById('resumeLink').href = resumeUrl;
+        });
+    });
+});
+</script>
+
+<%- include('../partials/footer') %>

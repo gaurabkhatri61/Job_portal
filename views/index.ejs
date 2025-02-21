@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Job Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <%- include('partials/header') %>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4 mb-4">Find Your Dream Job</h1>
+            <p class="lead mb-5">Connect with top employers and opportunities</p>
+            <div class="d-flex justify-content-center gap-3">
+                <% if (!user) { %>
+                    <a href="/auth/register" class="btn btn-primary btn-lg">Register</a>
+                    <a href="/auth/login" class="btn btn-outline-light btn-lg">Login</a>
+                <% } else { %>
+                    <% if (user.role === 'employer') { %>
+                        <a href="/companies/create" class="btn btn-primary btn-lg">Create Company Profile</a>
+                        <a href="/jobs/create" class="btn btn-outline-light btn-lg">Post a Job</a>
+                    <% } else { %>
+                        <a href="/jobs" class="btn btn-primary btn-lg">Browse Jobs</a>
+                        <a href="/companies" class="btn btn-outline-light btn-lg">View Companies</a>
+                    <% } %>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Features -->
+    <div class="container mb-5">
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card feature-card h-100">
+                    <div class="card-body text-center">
+                        <h3 class="card-title mb-3">Browse Jobs</h3>
+                        <p class="card-text">Explore thousands of job opportunities across various industries and locations.</p>
+                        <a href="/jobs" class="btn btn-primary">View All Jobs</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card feature-card h-100">
+                    <div class="card-body text-center">
+                        <h3 class="card-title mb-3">Company Profiles</h3>
+                        <p class="card-text">Discover leading companies and their current openings.</p>
+                        <a href="/companies" class="btn btn-primary">View Companies</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works -->
+    <div class="container mb-5">
+        <h2 class="text-center mb-4">How It Works</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-person-plus display-4"></i>
+                    </div>
+                    <h4>Create Account</h4>
+                    <p>Sign up as a job seeker or employer</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-search display-4"></i>
+                    </div>
+                    <h4>Search Jobs</h4>
+                    <p>Find the perfect job match</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-send display-4"></i>
+                    </div>
+                    <h4>Apply</h4>
+                    <p>Submit your application</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .hero-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/images/hero-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 100px 0;
+            margin-bottom: 50px;
+        }
+        .feature-card {
+            transition: transform 0.3s;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        .bi {
+            color: #0d6efd;
+        }
+    </style>
+
+    <%- include('partials/footer') %>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

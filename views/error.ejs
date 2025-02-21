@@ -1,0 +1,30 @@
+<%- include('partials/header') %>
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h1 class="display-1 text-danger mb-4">😕</h1>
+                        <h2 class="card-title mb-4">
+                            <%= (typeof error !== 'undefined' && error.status) ? error.status : 500 %> - 
+                            <%= (typeof message !== 'undefined' && message) ? message : 'Something went wrong' %>
+                        </h2>
+                        
+                        <% if (typeof error !== 'undefined' && error && error.stack && process.env.NODE_ENV === 'development') { %>
+                            <div class="alert alert-danger text-start">
+                                <pre class="mb-0"><%= error.stack %></pre>
+                            </div>
+                        <% } %>
+
+                        <div class="mt-4">
+                            <a href="/" class="btn btn-primary">Go Home</a>
+                            <button onclick="history.back()" class="btn btn-outline-secondary ms-2">Go Back</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<%- include('partials/footer') %>

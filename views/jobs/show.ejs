@@ -1,0 +1,184 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5">
+    <!-- Flash Messages -->
+    <% if (locals.success_msg && success_msg.length > 0) { %>
+        <div class="alert alert-success alert-dismissible fade show">
+            <%= success_msg %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+
+    <% if (locals.error_msg && error_msg.length > 0) { %>
+        <div class="alert alert-danger alert-dismissible fade show">
+            <%= error_msg %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <h1 class="card-title mb-3"><%= job.title %></h1>
+                            <div class="d-flex align-items-center">
+                                <% if (job.company && job.company.logoUrl) { %>
+                                    <img src="<%= job.company.logoUrl %>" alt="<%= job.company.companyName %> Logo" 
+                                        class="me-3" style="max-height: 40px;">
+                                <% } %>
+                                <div>
+                                    <h5 class="mb-1">
+                                        <%= job.company ? job.company.companyName : 'Company Name Not Available' %>
+                                    </h5>
+                                    <p class="text-muted mb-0">
+                                        <i class="fas fa-map-marker-alt me-2"></i>
+                                        <%= job.location %>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-success mb-2 d-block">
+                                <%= job.status.charAt(0).toUpperCase() + job.status.slice(1) %>
+                            </span>
+                            <small class="text-muted">
+                                Posted <%= new Date(job.createdAt).toLocaleDateString() %>
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="job-details mb-4">
+                        <div class="d-flex flex-wrap gap-3 mb-4">
+                            <div class="job-detail-item">
+                                <i class="fas fa-briefcase me-2"></i>
+                                <%= job.type %>
+                            </div>
+                            <% if (job.salary) { %>
+                                <div class="job-detail-item">
+                                    <i class="fas fa-money-bill-wave me-2"></i>
+                                    <%= job.salary %>
+                                </div>
+                            <% } %>
+                        </div>
+
+                        <h4 class="mb-3">Job Description</h4>
+                        <div class="mb-4">
+                            <%= job.description %>
+                        </div>
+
+                        <h4 class="mb-3">Requirements</h4>
+                        <div class="mb-4">
+                            <%= job.requirements %>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <% if (user && user.role === 'jobseeker' && job.status === 'open') { %>
+                            <a href="/applications/jobs/<%= job.id %>/apply" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-paper-plane me-2"></i>Apply Now
+                            </a>
+                        <% } %>
+                        <% if (user && user.role === 'employer') { %>
+                            <a href="/applications/jobs/<%= job.id %>" class="btn btn-info btn-lg w-100">
+                                <i class="fas fa-list-alt me-2"></i>View Applications
+                            </a>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">About the Company</h4>
+                    <% if (job.company) { %>
+                        <p class="mb-4"><%= job.company.description %></p>
+                        
+                        <div class="company-details">
+                            <% if (job.company.website) { %>
+                                <div class="mb-3">
+                                    <i class="fas fa-globe me-2"></i>
+                                    <a href="<%= job.company.website %>" target="_blank" class="text-decoration-none">
+                                        Visit Website
+                                    </a>
+                                </div>
+                            <% } %>
+                            
+                            <div class="mb-3">
+                                <i class="fas fa-map-marker-alt me-2"></i>
+                                <%= job.company.location %>
+                            </div>
+                        </div>
+
+                        <a href="/companies/<%= job.company.id %>" class="btn btn-outline-primary w-100">
+                            View Company Profile
+                        </a>
+                    <% } else { %>
+                        <p class="text-muted">Company information not available</p>
+                    <% } %>
+                </div>
+            </div>
+
+            <% if (user && user.role === 'employer' && user.id === job.company.userId) { %>
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h4 class="card-title mb-4">Manage Job</h4>
+                        <div class="d-grid gap-2">
+                            <a href="/jobs/<%= job.id %>/edit" class="btn btn-outline-primary">
+                                <i class="fas fa-edit me-2"></i>Edit Job
+                            </a>
+                            <a href="/jobs/<%= job.id %>/applications" class="btn btn-outline-info">
+                                <i class="fas fa-users me-2"></i>View Applications
+                            </a>
+                            <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteJobModal">
+                                <i class="fas fa-trash-alt me-2"></i>Delete Job
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<% if (user && user.role === 'employer' && user.id === job.company.userId) { %>
+    <!-- Delete Job Modal -->
+    <div class="modal fade" id="deleteJobModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Delete Job</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this job posting? This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form action="/jobs/<%= job.id %>?_method=DELETE" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+<% } %>
+
+<%- include('../partials/footer') %>
+
+<style>
+.job-detail-item {
+    background-color: #f8f9fa;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+.company-details {
+    color: #6c757d;
+}
+</style>
