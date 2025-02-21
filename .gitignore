@@ -1,4 +1,5 @@
 # Ignore uploaded files
 uploads/ 
+node_modules/
 config/
 .env
